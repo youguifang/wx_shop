@@ -1,11 +1,7 @@
 <template>
   <div>
-    <!-- 搜索框 -->
-    <div class="search">
-      <div class="search-input">
-        <icon class="search-icon" type="search" size="32rpx"></icon>搜索
-      </div>
-    </div>
+    <!-- Search组件 -->
+    <search></search>
     <!-- 首页轮播图 -->
     <div>
       <swiper
@@ -25,49 +21,71 @@
     <div class="menu">
       <img class="menu-item" v-for="(item, index) in menuList" :key="index" :src="item.image_src" />
     </div>
+    <!-- 楼层 -->
+    <div class="floor">
+      <div class="floor-item" v-for="(item, index) in floors" :key="index">
+        <div class="floor-head">
+          <image
+            mode="aspectFit"
+            :src="item.floor_title.image_src"
+          >
+          </image>
+        </div>
+        <div class="floor-body">
+          <div class="floor-body-left">
+            <image
+              :src="item.product_list[0].image_src">
+            </image>
+          </div>
+          <div class="floor-body-right">
+            <image
+              v-for="(subItem, subIndex) in item.product_list" :key="subIndex" v-if="subIndex != 0"
+              :src="subItem.image_src"
+            >
+            </image>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
-import request from '../../utils/request.js'
+import request from '@/utils/request.js'
+import Search from '@/components/Search'
 export default {
+  components: {
+    Search
+  },
   data() {
     return {
       imgUrl: [],
-      menuList: []
+      menuList: [],
+      floors: []
     }
   },
   mounted () {
     // 首页轮播图的请求
-    request("https://itjustfun.cn/api/public/v1/home/swiperdata")
+    request("https://www.zhengzhicheng.cn/api/public/v1/home/swiperdata")
     .then(res => {
-      this.imgUrl = res.data.data
+      console.log(res)
+      this.imgUrl = res.data.message
     })
     // 首页菜单导航的请求
-    request("https://itjustfun.cn/api/public/v1/home/catitems")
+    request("https://www.zhengzhicheng.cn/api/public/v1/home/catitems")
     .then(res => {
-     this.menuList = res.data.data
+     this.menuList = res.data.message
+    })
+    // 楼层的数据请求
+    request("https://www.zhengzhicheng.cn/api/public/v1/home/floordata")
+    .then(res => {
+      console.log(res)
+      this.floors = res.data.message
     })
   }
 };
 </script>
 
-<style>
-.search {
-  padding: 16rpx 30rpx;
-  background-color: #eb4450;
-}
-.search-input {
-  height: 60rpx;
-  background-color: #fff;
-  border-radius: 3px;
-  color: #ddd;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.search-icon {
-  margin-right: 16rpx;
-}
+<style lang="scss">
 .slide {
   height: 340rpx; 
 }
@@ -83,5 +101,42 @@ export default {
 .menu-item {
   width: 128rpx;
   height: 140rpx;
+}
+.floor .floor-head {
+  width: 100%;
+  height: 88rpx;
+  
+}
+.floor-head image {
+  width: 100%;
+  height: 88rpx;
+}
+.floor .floor-body {
+  padding: 20rpx 16rpx 20rpx 16rpx;
+  display: flex;
+}
+.floor-body .floor-body-left {
+  width: 235rpx;
+  height: 368rpx;
+  margin-right: 10rpx;
+}
+.floor-body .floor-body-left image {
+  width: 100%;
+  height: 100%;
+}
+.floor-body .floor-body-right {
+  width: 476rpx;
+  height: 368rpx;
+  display: flex;
+  flex-wrap: wrap;
+}
+.floor-body .floor-body-right image {
+  width: 233rpx;
+  height: 180rpx;
+  margin-bottom: 10rpx;
+  // margin-right: 3rpx;
+  &:nth-of-type(odd) {
+    margin-right: 10rpx;
+  }
 }
 </style>
